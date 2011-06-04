@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>
+      {{ page.title }}
+    </title>
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+  </head>
+  <body>
+    <div id="container">
+      <div id="header">
+        <h1>Kofno</h1>
+        <p>puts "#{clever_subtitle}"</p>
+      </div>
+      <div id="navigation">
+        <ul>
+          <li><a href="/">Blog</a></li>
+          <li><a href="https://github.com/kofno">Profile</a></li>
+        </ul>
+      </div>
+      <div id="content">
+        {{ content }}
+      </div>
+      <div id="footer">
+        Copyright &copy; Ryan L. Bell, 2011
+      </div>
+    </div>
+  </body>
+</html>
