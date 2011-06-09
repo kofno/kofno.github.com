@@ -44,3 +44,13 @@ Actors aren't very practical if you have to instantiate a new one every time you
 <script src="https://gist.github.com/1011573.js?file=taunting_actor.rb">&npsp;</script>
 
 Let's look at what's changed in this code. First of all, we're now running in a loop, so our thread won't die. Within the loop, we still call #receive, but this time we pass it a block. In the block form, we now have access to the Filter object, which allows us to process different types of messages. When the message is a String, the actor taunts you. When the message is the symbol :stop, then the loop is exited and the actor process dies.
+
+We've only been using strings and symbols as messages, but we could use any ruby object.
+
+You'll notice that we've replaced Strings and symbols with our own types and the filtering logic still works fine.
+
+<script src="https://gist.github.com/1011573.js?file=livestock_actor.rb">&nbsp;</script>
+
+It's pretty clear now that our actors are getting out of hand. What they could really use now is some supervision. We'll cover supervisors in the next section.
+
+### Supervisors
