@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Actors in Ruby: Rubinius (WIP)"
+title: "Actors in Ruby: Rubinius"
 ---
 
 {{ page.title }}
