@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Actors in Ruby: Rubinius"
+title: "Basics of Actors (using Rubinius)"
 ---
 
 {{ page.title }}
