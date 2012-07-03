@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Domain Modeling"
+title: "Domain Modelingi (WIP)"
 ---
 
 {{ page.title }}
