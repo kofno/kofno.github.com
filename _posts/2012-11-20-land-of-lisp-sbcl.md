@@ -16,3 +16,5 @@ I've provided READMEs or comments in places where I had to deviate
 from the book.  Today I pushed 'Chapter 15, The Dice of Doom'.
 
 If you're interested, I've stashed my [repo on github](https://github.com/kofno/land-of-lisp).
+
+UPATE: Pushed Chapter 17: DSLs
