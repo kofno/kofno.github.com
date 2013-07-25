@@ -8,13 +8,13 @@ title: "Infinite FizzBuzz: Lazy Programming in Ruby"
 
 One of the first things I wrote when I started to learn Haskell was FizzBuzz.
 More challenging as a drinking game then a programming exercise, its still a
-good exercise for just getting some code to run. And afer some fiddling, I
+good exercise for just getting some code to run. And after some fiddling, I
 eventually ended up with something that looked like this:
 
 <script src="https://gist.github.com/kofno/6075856.js?file=FizzBuzz.hs">&nbsp;</script>
 
 My _actual_ first try used a list comprehension, rather then a map, but the
-resemblence to a Ruby implementation is undenialble. In fact, here is a Ruby
+resemblance to a Ruby implementation is undeniable. In fact, here is a Ruby
 implementation of FizzBuzz.
 
 <script src="https://gist.github.com/kofno/6075856.js?file=fizz_buzz.rb">&nbsp;</script>
@@ -27,7 +27,7 @@ In fact, they are called pretty much the same way
 
 Well, that was largely unsatisfying. My first working Haskell function was
 written in Ruby. Surely, with the lazy goodness of Haskell, we must be able to
-build a better FizzBuzz. A FizzBuzz generator. An inifinite stream of Fizzes
+build a better FizzBuzz. A FizzBuzz generator. An infinite stream of Fizzes
 and Buzzes. And so I searched, and I found
 [this](http://pragprog.com/magazines/2012-08/thinking-functionally-with-haskell)
 article by Paul Callaghan, which showed me how I might achieve the Infinite
@@ -38,7 +38,7 @@ FizzBuzz. And soon I had this:
 This is pretty neat. What we're actually doing here is zipping together three
 infinite lists: the Fizzes list, the Buzzes list, and an infinite list of
 numbers. If the buzzer function receives an empty string from the fizzes, and
-an empty string from the buzzes, then it simply shows the number. Otherewise it
+an empty string from the buzzes, then it simply shows the number. Otherwise it
 concatenates the fizz string and the buzz string.
 
 With this new version of fizzBuzz (fizzBuzz PRIME!), if we want the first
@@ -64,7 +64,7 @@ evaluate an expression until the value is needed. Haskell is lazy by default.
 Ruby is not. And so it takes additional effort to implement Lazy evaluation in
 Ruby.
 
-The key to laziness in Ruby is the Enumerators. Different from the Enumeable
+The key to laziness in Ruby is the Enumerators. Different from the Enumerable
 mixin, Enumerators are external references to collections. In this way, they
 are similar to the external iterators from Java. They also are a duck type for
 anything Enumerable, so they can be used interchangeably with those types in
@@ -98,21 +98,21 @@ With this set you will never get out of #map.
 
 You may have seen (or written) a solution like this before:
 
-   results = []
-   (1..Float::INFINITY).each do |n|
-     n = n * 3
-     next unless n.even?
-     results << n
-     break if results.size >= 3
-   end
-   results
+    results = []
+    (1..Float::INFINITY).each do |n|
+      n = n * 3
+      next unless n.even?
+      results << n
+      break if results.size >= 3
+    end
+    results
 
 This works, though it's unpleasant.
 
 If we introduce laziness into the computation, we can then process the infinite
 set without interleaving business logic, or resorting to next and break.
 
-    irb> (1..Float::INIFINITY).lazy.map { |n| n * 3 }.select { |n| n.even? }.first(3)
+    irb> (1..Float::INFINITY).lazy.map { |n| n * 3 }.select { |n| n.even? }.first(3)
     [6, 12, 18]
 
 When you introduce laziness, Ruby changes from processing all of the data at
@@ -150,7 +150,7 @@ And when we call this function just like the Haskell version (only backwards)
     irb> fizz_buzz.drop(20).first(20)
 
 One problem with the Ruby solution is that, while the list iteration is indeed
-lazy (our zip call is not trapped in an infinate loop), the block in the map
+lazy (our zip call is not trapped in an infinite loop), the block in the map
 call is always evaluated, even for values that we are dropping.
 
 By adding a #puts call to the block, we can see this problem illustrated.
@@ -241,7 +241,7 @@ computation for the values we want.
 Jackpot! We can see that our #puts message was only evaluated in the
 calculations we cared about. We created a certain amount of overhead by
 creating procs for every computation and then throwing some away, but if the
-computation is suitably expensive, then the overhead is negligiable, compared
+computation is suitably expensive, then the overhead is negligible, compared
 to only performing the computation on the values we care about.
 
 ### Conclusion
@@ -257,9 +257,9 @@ Enumerable methods in Ruby.
 
 And we've also seen how, even when using Enumerator::Lazy, we must be vigilant
 about Ruby's eagerness. There are times when we must explicitly defer
-computations, particualrly expensive computations, if we are to enjoy the full
+computations, particularly expensive computations, if we are to enjoy the full
 benefits of lazy evaluation.
 
 Lazy evaluation may not be a tool you reach for every day, but it does provide
 a simple and elegant solution to a particular set of inefficiencies that are
-inherant to processing datasets with Ruby's Enumerable methods.
+inherent to processing datasets with Ruby's Enumerable methods.
