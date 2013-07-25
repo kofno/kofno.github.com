@@ -7,41 +7,38 @@ title: "Infinite FizzBuzz: Lazy Programming in Ruby"
 ----------------
 
 One of the first things I wrote when I started to learn Haskell was FizzBuzz.
-More challenging as a drinking game then a programming exercise, its still a
-good exercise for just getting some code to run. And after some fiddling, I
-eventually ended up with something that looked like this:
+That tends to be one the first things I write when I'm learning any new
+programming language. My first Haskell FizzBuzz looked something like this:
 
 <script src="https://gist.github.com/kofno/6075856.js?file=FizzBuzz.hs">&nbsp;</script>
 
-My _actual_ first try used a list comprehension, rather then a map, but the
-resemblance to a Ruby implementation is undeniable. In fact, here is a Ruby
+The resemblance to a Ruby implementation is undeniable. In fact, here is a Ruby
 implementation of FizzBuzz.
 
 <script src="https://gist.github.com/kofno/6075856.js?file=fizz_buzz.rb">&nbsp;</script>
 
-In fact, they are called pretty much the same way
+They are also called the same way:
 
     ghci> fizzBuzz [1..20]
 
     irb> fizz_buzz 1..20
 
-Well, that was largely unsatisfying. My first working Haskell function was
-written in Ruby. Surely, with the lazy goodness of Haskell, we must be able to
-build a better FizzBuzz. A FizzBuzz generator. An infinite stream of Fizzes
-and Buzzes. And so I searched, and I found
-[this](http://pragprog.com/magazines/2012-08/thinking-functionally-with-haskell)
-article by Paul Callaghan, which showed me how I might achieve the Infinite
-FizzBuzz. And soon I had this:
+That was unsatisfying. My first working Haskell function was written in Ruby.
+Surely, with the lazy goodness of Haskell, we must be able to build a cooler
+FizzBuzz. A Haskelly FizzBuzz. A FizzBuzz generator. An infinite stream of
+Fizzes and Buzzes. [This](http://pragprog.com/magazines/2012-08/thinking-functionally-with-haskell)
+article by Paul Callaghan demonstrates how one might achieve the Infinite
+FizzBuzz. Here was my take:
 
 <script src="https://gist.github.com/kofno/6075856.js?file=InfiniteFizzBuzz.hs">&nbsp;</script>
 
-This is pretty neat. What we're actually doing here is zipping together three
-infinite lists: the Fizzes list, the Buzzes list, and an infinite list of
-numbers. If the buzzer function receives an empty string from the fizzes, and
-an empty string from the buzzes, then it simply shows the number. Otherwise it
-concatenates the fizz string and the buzz string.
+This is indeed pretty cool. What we're actually doing here is zipping together three
+infinite lists: the Fizzes list (threes), the Buzzes list (fives), and an
+infinite list of numbers. If the buzzer function receives an empty string from
+the fizzes, and an empty string from the buzzes, then it simply shows the
+number. Otherwise it concatenates the fizz string and the buzz string.
 
-With this new version of fizzBuzz (fizzBuzz PRIME!), if we want the first
+With this new version of fizzBuzz (fizzBuzz PRIME!), when we want the first
 twenty FizzBuzzes, we simply take the first twenty.
 
     ghci> take 20 fizzBuzz'
@@ -61,7 +58,7 @@ Ruby?" And I answered myself, "I dunno. Let's find out!"
 
 Lazy refers to lazy evaluation. A system that uses lazy evaluation doesn't
 evaluate an expression until the value is needed. Haskell is lazy by default.
-Ruby is not. And so it takes additional effort to implement Lazy evaluation in
+Ruby is not, so it takes additional effort to implement Lazy evaluation in
 Ruby.
 
 The key to laziness in Ruby is the Enumerators. Different from the Enumerable
@@ -134,7 +131,7 @@ You should go read it.
 
 Using our Haskell implementation as a reference, we can begin to assemble the
 parts we need for the Ruby implementation. First we need a way to represent our
-infinite lists of fizzes. buzzes, and numbers.
+infinite lists of fizzes, buzzes, and numbers.
 
     [nil, nil, "Fizz"].cycle
     [nil, nil, nil, nil, "Buzz"].cycle
@@ -144,7 +141,7 @@ If we zip these together and apply our concatenation logic, we are all set.
 
 <script src="https://gist.github.com/kofno/6075856.js?file=infinite_fizz_buzz.rb">&nbsp;</script>
 
-And when we call this function just like the Haskell version (only backwards)
+And we can call this function just like the Haskell version (only backwards)
 
     irb> fizz_buzz.first(20)
     irb> fizz_buzz.drop(20).first(20)
@@ -207,7 +204,7 @@ No further evaluation needed.
 In lazy evaluated languages, all expressions are treated as thunks. Thunks are
 evaluated as their results are needed. This is mostly transparent to the
 programmer. Ruby, on the other hand, eagerly evaluates expressions. We have to
-explicitly tell Ruby to defer a computation. And when we want to defer a
+explicitly tell Ruby to defer a computation. When we want to defer a
 computation in Ruby, we need a Proc.
 
 We can now change our last example so that the computation in the #map block
@@ -216,7 +213,7 @@ produces a thunk, rather then evaluating the expression.
 <script src="https://gist.github.com/kofno/6075856.js?file=thunk_fizz_buzz.rb">&nbsp;</script>
 
 Now our infinite fizz buzz defers _all_ fizz buzz computation, even for the
-results we want to see. If you run the fizz_buzz now, you'll like see a result
+results we want to see. If you run the fizz_buzz now, you'll see a result
 like this:
 
     [#<Proc:0x007f8cd0829ad8@(irb):81 (lambda)>, #<Proc:0x007f8cd08297e0@(irb):81 (lambda)>,
@@ -241,7 +238,7 @@ computation for the values we want.
 Jackpot! We can see that our #puts message was only evaluated in the
 calculations we cared about. We created a certain amount of overhead by
 creating procs for every computation and then throwing some away, but if the
-computation is suitably expensive, then the overhead is negligible, compared
+computation is suitably expensive, then the overhead is negligible compared
 to only performing the computation on the values we care about.
 
 ### Conclusion
@@ -252,10 +249,10 @@ deeper of an understanding of lazy evaluation and how it can be applied in an
 eager system, like Ruby.
 
 We've seen how Enumerator::Lazy can help us avoid certain inefficiencies that,
-until now, has become common place (dare I say, idiomatic) when dealing with
+until now, were common place (dare I say, idiomatic) when dealing with
 Enumerable methods in Ruby.
 
-And we've also seen how, even when using Enumerator::Lazy, we must be vigilant
+We've also seen how, even when using Enumerator::Lazy, we must be vigilant
 about Ruby's eagerness. There are times when we must explicitly defer
 computations, particularly expensive computations, if we are to enjoy the full
 benefits of lazy evaluation.
