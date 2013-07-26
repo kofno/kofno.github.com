@@ -86,7 +86,7 @@ Then all 10 of those numbers are processed by #select, producing yet another
 array. Then, finally, we take first three of that array.
 
 This works fine, provided your set is small. But what if you're dealing with a
-vary large data set. For example:
+vary large data set? For example:
 
     irb> (1..Float::INFINITY).map { |n| n * 3 }.select { |n| n.even? }.first(3)
     ... yeah, keep waiting...
