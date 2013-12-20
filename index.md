@@ -13,6 +13,6 @@ yet (iteratively, you might say). It's just how I work. I'll mark incomplete
 articles as Works in Progress (WIP).
 
 {% for post in site.posts %}
-  [{{ post.title }}]({{ post.url }}) 
+  [{{ post.title }}]({{ post.url }})
 
 {% endfor %}
