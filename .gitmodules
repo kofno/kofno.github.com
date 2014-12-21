@@ -1,0 +1,3 @@
+[submodule "pixi-dust"]
+	path = pixi-dust
+	url = https://github.com/kofno/pixi-dust
