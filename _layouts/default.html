@@ -9,7 +9,12 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
     <link rel="alternate" type="application/atom+xml" title="ATOM feed" href="/feed.atom" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+      hljs.initHighlightingOnLoad();
+      hljs.configure({
+        lagnuages: ['haskell']
+      })
+    </script>
   </head>
   <body>
     <div id="container">
@@ -28,7 +33,7 @@
         {{ content }}
       </div>
       <div id="footer">
-        Copyright &copy; Ryan L. Bell, 2011, 2012, 2013, 2014
+        Copyright &copy; Ryan L. Bell, 2011, 2012, 2013, 2014, 2015
       </div>
     </div>
   </body>
