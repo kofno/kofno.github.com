@@ -22,19 +22,19 @@ Let's start with a module declaration. Since this is going to be
 executable, This module will be named Main. I could leave the module
 declaration off.
 
-``` {.sourceCode .literate .haskell}
+```
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 ```
 
-``` {.sourceCode .literate .haskell}
+```
 module Main where
 ```
 
 Next we have our imports. I'm going to be very specific about what I
 import, if only to make it easier for me to learn where functions live.
 
-``` {.sourceCode .literate .haskell}
+```
 import System.Environment (getEnv)
 import Control.Monad (forever)
 import Control.Concurrent (threadDelay)
@@ -65,21 +65,21 @@ import qualified Data.Text as T
 This is the signature of the main function (which drives our program).
 Basically, all Haskell programs boil down to a function doing IO.
 
-``` {.sourceCode .literate .haskell}
+```
 main :: IO ()
 ```
 
 Since our program will poll an IMAP server for email, we want it to run
 forever. Conveniently, Haskell has a function for this.
 
-``` {.sourceCode .literate .haskell}
+```
 main = forever $ do
 ```
 
 Next we establish our connection to the server. This example uses Gmail,
 so we need to connect over SSL.
 
-``` {.sourceCode .literate .haskell}
+```
   conn <- connectIMAPSSLWithSettings imapServer imapCfg
 ```
 
@@ -88,7 +88,7 @@ functions are pulling our credentials from the environment, which is in
 IO, so we need to unwrap those values before we can pass them to
 `login`, which is only expection `String`s.
 
-``` {.sourceCode .literate .haskell}
+```
   user <- username
   pass <- password
   login conn user pass
@@ -100,7 +100,7 @@ query to fetch a list of UIDs. These are ids that uniquely identify
 messages *for our current imap session*. We'll use the UIDs shortly to
 fetch the actual message content.
 
-``` {.sourceCode .literate .haskell}
+```
   select conn "INBOX"
   uids <- search conn [ALLs]
 ```
@@ -113,27 +113,27 @@ on; reading the compostion "backwards", it is fetching the message over
 the imap connections, grabbing the message id out of the message, and
 then puting the message to standard out.
 
-``` {.sourceCode .literate .haskell}
+```
   mapM_ (putMessageID . getMessageID . fetchMessage conn) uids
 ```
 
 When we are done with our work, we logoff this connection.
 
-``` {.sourceCode .literate .haskell}
+```
   logout conn
 ```
 
 And print out a message so we know when things are happening (maybe we
 don't have a high volume INBOX).
 
-``` {.sourceCode .literate .haskell}
+```
   putStrLn "Fetch complete"
 ```
 
 This last line puts our program thread to sleep for a minute. When it
 wakes up, it will poll the IMAP server again.
 
-``` {.sourceCode .literate .haskell}
+```
   threadDelay (10^6 * 60)
 ```
 
@@ -143,7 +143,7 @@ actually has functions for pulling down just headers, or subsets or
 headers, or whatever, but let's just assume that we have some grand plan
 that requires the entire message.
 
-``` {.sourceCode .literate .haskell}
+```
 fetchMessage :: IMAPConnection -> UID -> IO Text
 fetchMessage conn uid = do
   content <- fetch conn uid
@@ -159,7 +159,7 @@ I use a compostion trick later with `>>=`, but I couldn't figure out how
 to make that work with the types here. That's why I'm just using the
 'do' syntax to unwrap the content from IO. ¯\_(ツ)\_/¯
 
-``` {.sourceCode .literate .haskell}
+```
 getMessageID :: IO Text -> IO Text
 getMessageID raw = do
   content <- raw
@@ -177,7 +177,7 @@ Maybe type provides; a data type for representing a computation that may
 not return a value. It is actually implemented in terms of the more
 general `pluckHeaderValue`.
 
-``` {.sourceCode .literate .haskell}
+```
 pluckMessageID :: MIMEValue -> Text
 pluckMessageID = pluckHeaderValue messageIDHeader
 
@@ -202,7 +202,7 @@ result of an IO operation. That's what the `>>=` is all about; it
 basically unwraps the text from the IO (someone will HATE that
 description)
 
-``` {.sourceCode .literate .haskell}
+```
 putMessageID :: IO Text -> IO ()
 putMessageID msgID = msgID >>= TIO.putStrLn
 ```
@@ -214,7 +214,7 @@ Here we are hard coding our imap server, but you could certainly pull
 this from the environment or from the command line arguments if you
 prefer.
 
-``` {.sourceCode .literate .haskell}
+```
 imapServer :: String
 imapServer = "imap.gmail.com"
 ```
@@ -223,7 +223,7 @@ I was having trouble connecting to Gmail until I copied this
 configuration from the example code. We're using this for our
 configuration, rather then just the default settings.
 
-``` {.sourceCode .literate .haskell}
+```
 imapCfg :: Settings
 imapCfg = defaultSettingsIMAPSSL { sslMaxLineLength = 100000 }
 ```
@@ -238,7 +238,7 @@ they are `IO String` values. That's why we need to process them as part
 of IO monad before we can pass the `String` values on. There are
 probably more Haskell-y ways to do this, but this was most clear to me.
 
-``` {.sourceCode .literate .haskell}
+```
 username :: IO String
 username = getEnv "IMAP_USER"
 
