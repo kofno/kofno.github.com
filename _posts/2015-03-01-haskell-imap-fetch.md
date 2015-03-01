@@ -18,81 +18,71 @@ This post is written in Literate Haskell, which means the source file is
 actually an executable Haskell program. I'm simply annotating it with
 all of blog post fluff.
 
-Let's start with a module declaration. Since this is going to be
+Let's start off with some language pragmas. This just tells Haskell to
+use some language extensions that aren't part of the default.
+
+    {-# LANGUAGE RecordWildCards #-}
+    {-# LANGUAGE OverloadedStrings #-}
+
+
+Then comes our module declaration. Since this is going to be
 executable, This module will be named Main. I could leave the module
 declaration off.
 
-```
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE OverloadedStrings #-}
-```
-
-```
-module Main where
-```
+    module Main where
 
 Next we have our imports. I'm going to be very specific about what I
 import, if only to make it easier for me to learn where functions live.
 
-```
-import System.Environment (getEnv)
-import Control.Monad (forever)
-import Control.Concurrent (threadDelay)
-import Data.Text (Text)
-import Data.Text.Encoding (decodeUtf8)
-import Data.List (find)
-import Data.Maybe
-import Network.HaskellNet.IMAP.Types (UID)
-import Network.HaskellNet.IMAP ( SearchQuery (ALLs)
-                               , login
-                               , select
-                               , search
-                               , logout
-                               , fetch
-                               )
-import Network.HaskellNet.IMAP.Connection (IMAPConnection)
-import Network.HaskellNet.SSL (Settings (..))
-import Network.HaskellNet.IMAP.SSL ( connectIMAPSSLWithSettings
-                                   , defaultSettingsIMAPSSL
+    import System.Environment (getEnv)
+    import Control.Monad (forever)
+    import Control.Concurrent (threadDelay)
+    import Data.Text (Text)
+    import Data.Text.Encoding (decodeUtf8)
+    import Data.List (find)
+    import Data.Maybe
+    import Network.HaskellNet.IMAP.Types (UID)
+    import Network.HaskellNet.IMAP ( SearchQuery (ALLs)
+                                   , login
+                                   , select
+                                   , search
+                                   , logout
+                                   , fetch
                                    )
-import Codec.MIME.Type  (MIMEValue (..), MIMEParam (..))
-import Codec.MIME.Parse (parseMIMEMessage)
-
-import qualified Data.Text.IO as TIO
-import qualified Data.Text as T
-```
+    import Network.HaskellNet.IMAP.Connection (IMAPConnection)
+    import Network.HaskellNet.SSL (Settings (..))
+    import Network.HaskellNet.IMAP.SSL ( connectIMAPSSLWithSettings
+                                       , defaultSettingsIMAPSSL
+                                       )
+    import Codec.MIME.Type  (MIMEValue (..), MIMEParam (..))
+    import Codec.MIME.Parse (parseMIMEMessage)
+    
+    import qualified Data.Text.IO as TIO
+    import qualified Data.Text as T
 
 This is the signature of the main function (which drives our program).
 Basically, all Haskell programs boil down to a function doing IO.
 
-```
-main :: IO ()
-```
+    main :: IO ()
 
 Since our program will poll an IMAP server for email, we want it to run
 forever. Conveniently, Haskell has a function for this.
 
-```
-main = forever $ do
-```
+    main = forever $ do
 
 Next we establish our connection to the server. This example uses Gmail,
 so we need to connect over SSL.
 
-```
-  conn <- connectIMAPSSLWithSettings imapServer imapCfg
-```
+      conn <- connectIMAPSSLWithSettings imapServer imapCfg
 
 Then we authenticate to the server. The `username` and `password`
 functions are pulling our credentials from the environment, which is in
 IO, so we need to unwrap those values before we can pass them to
 `login`, which is only expection `String`s.
 
-```
-  user <- username
-  pass <- password
-  login conn user pass
-```
+      user <- username
+      pass <- password
+      login conn user pass
 
 Now that we've established a connection, we are going to grab a list of
 messages from the INBOX. We select the INBOX, and then we use an IMAP
@@ -100,10 +90,8 @@ query to fetch a list of UIDs. These are ids that uniquely identify
 messages *for our current imap session*. We'll use the UIDs shortly to
 fetch the actual message content.
 
-```
-  select conn "INBOX"
-  uids <- search conn [ALLs]
-```
+      select conn "INBOX"
+      uids <- search conn [ALLs]
 
 This next line of code is just mapping over the uids. It's structure is
 simply `map _some_function_ uids`. The *some\_function* in this case is
@@ -113,29 +101,21 @@ on; reading the compostion "backwards", it is fetching the message over
 the imap connections, grabbing the message id out of the message, and
 then puting the message to standard out.
 
-```
-  mapM_ (putMessageID . getMessageID . fetchMessage conn) uids
-```
+      mapM_ (putMessageID . getMessageID . fetchMessage conn) uids
 
 When we are done with our work, we logoff this connection.
 
-```
-  logout conn
-```
+      logout conn
 
 And print out a message so we know when things are happening (maybe we
 don't have a high volume INBOX).
 
-```
-  putStrLn "Fetch complete"
-```
+      putStrLn "Fetch complete"
 
 This last line puts our program thread to sleep for a minute. When it
 wakes up, it will poll the IMAP server again.
 
-```
-  threadDelay (10^6 * 60)
-```
+      threadDelay (10^6 * 60)
 
 `fetchMessage` grabs the entire message from the server and converts it
 to Text, assuming the bytestring is UTF-8 encoded. The imap library
@@ -143,12 +123,10 @@ actually has functions for pulling down just headers, or subsets or
 headers, or whatever, but let's just assume that we have some grand plan
 that requires the entire message.
 
-```
-fetchMessage :: IMAPConnection -> UID -> IO Text
-fetchMessage conn uid = do
-  content <- fetch conn uid
-  return $ decodeUtf8 content
-```
+    fetchMessage :: IMAPConnection -> UID -> IO Text
+    fetchMessage conn uid = do
+      content <- fetch conn uid
+      return $ decodeUtf8 content
 
 Every email message *should* have a Message-ID header that uniquely
 identifies that message in the universe of all email. `getMessageID`
@@ -159,16 +137,14 @@ I use a compostion trick later with `>>=`, but I couldn't figure out how
 to make that work with the types here. That's why I'm just using the
 'do' syntax to unwrap the content from IO. ¯\_(ツ)\_/¯
 
-```
-getMessageID :: IO Text -> IO Text
-getMessageID raw = do
-  content <- raw
-  mapM_ TIO.putStrLn $ headers (parseMIMEMessage content)
-  return $ pluckMessageID (parseMIMEMessage content)
- where
-   headers MIMEValue {..} = map headerName mime_val_headers
-   headerName (MIMEParam header _) = header
-```
+    getMessageID :: IO Text -> IO Text
+    getMessageID raw = do
+      content <- raw
+      mapM_ TIO.putStrLn $ headers (parseMIMEMessage content)
+      return $ pluckMessageID (parseMIMEMessage content)
+     where
+       headers MIMEValue {..} = map headerName mime_val_headers
+       headerName (MIMEParam header _) = header
 
 `pluckMessageID` looks through the parsed email message for the
 Message-ID header. When it finds it, it returns it. If there isn't a
@@ -177,24 +153,22 @@ Maybe type provides; a data type for representing a computation that may
 not return a value. It is actually implemented in terms of the more
 general `pluckHeaderValue`.
 
-```
-pluckMessageID :: MIMEValue -> Text
-pluckMessageID = pluckHeaderValue messageIDHeader
-
-messageIDHeader :: Text
-messageIDHeader = "message-id"
-
-pluckHeaderValue :: Text -> MIMEValue -> Text
-pluckHeaderValue headerName MIMEValue{..} =
-  valueOrDefault $ find headerMatch mime_val_headers
-  where
-    headerMatch :: MIMEParam -> Bool
-    headerMatch (MIMEParam headerName' _) = headerName' == headerName
-
-    valueOrDefault :: Maybe MIMEParam -> Text
-    valueOrDefault Nothing = T.concat ["No ", headerName]
-    valueOrDefault (Just (MIMEParam _ value)) = value
-```
+    pluckMessageID :: MIMEValue -> Text
+    pluckMessageID = pluckHeaderValue messageIDHeader
+    
+    messageIDHeader :: Text
+    messageIDHeader = "message-id"
+    
+    pluckHeaderValue :: Text -> MIMEValue -> Text
+    pluckHeaderValue headerName MIMEValue{..} =
+      valueOrDefault $ find headerMatch mime_val_headers
+      where
+        headerMatch :: MIMEParam -> Bool
+        headerMatch (MIMEParam headerName' _) = headerName' == headerName
+    
+        valueOrDefault :: Maybe MIMEParam -> Text
+        valueOrDefault Nothing = T.concat ["No ", headerName]
+        valueOrDefault (Just (MIMEParam _ value)) = value
 
 `putMessageID` just spits the message out to standard out. It has to be
 called in such a way that it can handle the fact that our Text was the
@@ -202,10 +176,8 @@ result of an IO operation. That's what the `>>=` is all about; it
 basically unwraps the text from the IO (someone will HATE that
 description)
 
-```
-putMessageID :: IO Text -> IO ()
-putMessageID msgID = msgID >>= TIO.putStrLn
-```
+    putMessageID :: IO Text -> IO ()
+    putMessageID msgID = msgID >>= TIO.putStrLn
 
 Most of the hard work is done. The rest of these functions are simply
 for binding our configuration to names we can use in the program.
@@ -214,19 +186,15 @@ Here we are hard coding our imap server, but you could certainly pull
 this from the environment or from the command line arguments if you
 prefer.
 
-```
-imapServer :: String
-imapServer = "imap.gmail.com"
-```
+    imapServer :: String
+    imapServer = "imap.gmail.com"
 
 I was having trouble connecting to Gmail until I copied this
 configuration from the example code. We're using this for our
 configuration, rather then just the default settings.
 
-```
-imapCfg :: Settings
-imapCfg = defaultSettingsIMAPSSL { sslMaxLineLength = 100000 }
-```
+    imapCfg :: Settings
+    imapCfg = defaultSettingsIMAPSSL { sslMaxLineLength = 100000 }
 
 As noted earlier, we are pulling username and password from the
 environment, if these environment varaibles are missing the program will
@@ -238,13 +206,11 @@ they are `IO String` values. That's why we need to process them as part
 of IO monad before we can pass the `String` values on. There are
 probably more Haskell-y ways to do this, but this was most clear to me.
 
-```
-username :: IO String
-username = getEnv "IMAP_USER"
-
-password :: IO String
-password = getEnv "IMAP_PASS"
-```
+    username :: IO String
+    username = getEnv "IMAP_USER"
+    
+    password :: IO String
+    password = getEnv "IMAP_PASS"
 
 There we have it! A small Haskell program that fetches email over IMAP
 and then parses the content.
