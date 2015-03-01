@@ -1,2 +1,5 @@
 *.swp
 _site
+/haskell-posts/.cabal-sandbox/
+/haskell-posts/cabal.sandbox.config
+/haskell-posts/dist/
