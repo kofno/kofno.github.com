@@ -8,7 +8,7 @@ title: "Haskell DoIts: Fetch email from IMAP"
 
 This is, what I hope, will be the first in a line of posts about
 building things with Haskell. The plan is to try and write a small
-program that does something using Hakell and Haskell libraries. This
+program that does something using Haskell and Haskell libraries. This
 post will specifically be about fetching messages from IMAP and parsing
 them. Since I'm just a neophyte Haskell hobbiest myself, I'll be
 learning as I go. Keep that in mind if you plan of using any of this in
