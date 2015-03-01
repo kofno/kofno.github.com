@@ -179,7 +179,7 @@ provides; a data type for representing a computation that may not
 return a value. It is actually implemented in terms of the more
 general `pluckHeaderValue`.
 
-``` sourceCode
+```haskell
 pluckMessageID :: MIMEValue -> Text
 pluckMessageID = pluckHeaderValue messageIDHeader
 
@@ -200,7 +200,7 @@ pluckHeaderValue headerName MIMEValue{..} =
 
 `putMessageID` just spits the message out to standard out. It has to be called in such a way that it can handle the fact that our Text was the result of an IO operation. That's what the `>>=` is all about; it basically unwraps the text from the IO (someone will HATE that description)
 
-``` sourceCode
+```haskell
 putMessageID :: IO Text -> IO ()
 putMessageID msgID = msgID >>= TIO.putStrLn
 ```
@@ -211,7 +211,7 @@ for binding our configuration to names we can use in the program.
 Here we are hard coding our imap server, but you could certainly pull this from
 the environment or from the command line arguments if you prefer.
 
-``` sourceCode
+```haskell
 imapServer :: String
 imapServer = "imap.gmail.com"
 ```
@@ -220,7 +220,7 @@ I was having trouble connecting to Gmail until I copied this configuration from 
 example code. We're using this for our configuration, rather then just the default
 settings.
 
-``` sourceCode
+```haskell
 imapCfg :: Settings
 imapCfg = defaultSettingsIMAPSSL { sslMaxLineLength = 100000 }
 ```
@@ -236,7 +236,7 @@ process them as part of IO monad before we can pass the `String`
 values on. There are probably more Haskell-y ways to do this, but this
 was most clear to me.
 
-``` sourceCode
+```haskell
 username :: IO String
 username = getEnv "IMAP_USER"
 
