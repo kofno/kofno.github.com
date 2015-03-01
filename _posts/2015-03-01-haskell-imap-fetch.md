@@ -140,11 +140,7 @@ to make that work with the types here. That's why I'm just using the
     getMessageID :: IO Text -> IO Text
     getMessageID raw = do
       content <- raw
-      mapM_ TIO.putStrLn $ headers (parseMIMEMessage content)
       return $ pluckMessageID (parseMIMEMessage content)
-     where
-       headers MIMEValue {..} = map headerName mime_val_headers
-       headerName (MIMEParam header _) = header
 
 `pluckMessageID` looks through the parsed email message for the
 Message-ID header. When it finds it, it returns it. If there isn't a
