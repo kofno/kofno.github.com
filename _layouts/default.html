@@ -5,9 +5,12 @@
     <title>
       {{ page.title }}
     </title>
-    <link rel="stylesheet" href="/styles.css" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+    <link rel="stylesheet" href="/styles.css" />
     <link rel="alternate" type="application/atom+xml" title="ATOM feed" href="/feed.atom" />
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
     <script>
       hljs.initHighlightingOnLoad();
@@ -17,18 +20,28 @@
     </script>
   </head>
   <body>
-    <div id="container">
-      <div id="header">
-        <h1>Kofno</h1>
-        <p>puts "#{clever_subtitle}"</p>
+   <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">KOFNO</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Blog</a></li>
+            <li><a href="https://github.com/kofno">Profile</a></li>
+            <li><a href="/pixi-dust">Games</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
       </div>
-      <div id="navigation">
-        <ul>
-          <li><a href="/">Blog</a></li>
-          <li><a href="https://github.com/kofno">Profile</a></li>
-          <li><a href="/pixi-dust" title="Pixi Dust">Games</a></li>
-        </ul>
-      </div>
+   </nav>
+
+   <div id="container" class="container">
       <div id="content">
         {{ content }}
       </div>
