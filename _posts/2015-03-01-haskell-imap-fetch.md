@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Haskell DoIts: Fetch email from IMAP"
+title: "Haskell Do-Its: Fetch email from IMAP"
 ---
 
 {{ page.title }}
@@ -56,7 +56,7 @@ import, if only to make it easier for me to learn where functions live.
                                        )
     import Codec.MIME.Type  (MIMEValue (..), MIMEParam (..))
     import Codec.MIME.Parse (parseMIMEMessage)
-    
+
     import qualified Data.Text.IO as TIO
     import qualified Data.Text as T
 
@@ -151,17 +151,17 @@ general `pluckHeaderValue`.
 
     pluckMessageID :: MIMEValue -> Text
     pluckMessageID = pluckHeaderValue messageIDHeader
-    
+
     messageIDHeader :: Text
     messageIDHeader = "message-id"
-    
+
     pluckHeaderValue :: Text -> MIMEValue -> Text
     pluckHeaderValue headerName MIMEValue{..} =
       valueOrDefault $ find headerMatch mime_val_headers
       where
         headerMatch :: MIMEParam -> Bool
         headerMatch (MIMEParam headerName' _) = headerName' == headerName
-    
+
         valueOrDefault :: Maybe MIMEParam -> Text
         valueOrDefault Nothing = T.concat ["No ", headerName]
         valueOrDefault (Just (MIMEParam _ value)) = value
@@ -204,7 +204,7 @@ probably more Haskell-y ways to do this, but this was most clear to me.
 
     username :: IO String
     username = getEnv "IMAP_USER"
-    
+
     password :: IO String
     password = getEnv "IMAP_PASS"
 
